@@ -12,12 +12,23 @@ $summary   = htmlspecialchars($_POST['summary'] ?? '');
 $education = htmlspecialchars($_POST['education'] ?? '');
 $skills    = htmlspecialchars($_POST['skills'] ?? '');
 
-$photoData = "";
-if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] == 0) {
-    $imgBinary = file_get_contents($_FILES['profile_pic']['tmp_name']);
-    $photoData = "data:" . $_FILES['profile_pic']['type'] . ";base64," . base64_encode($imgBinary);
-} else {
-    $photoData = "https://ui-avatars.com/api/?name=" . urlencode($fullname) . "&size=300&background=7fb069&color=fff";
+// Default fallback image
+$photoData = "https://ui-avatars.com/api/?name=" . urlencode($fullname) . "&size=300&background=7fb069&color=fff";
+
+// Safer Image Upload Handling
+if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] == UPLOAD_ERR_OK) {
+    $fileTmpPath = $_FILES['profile_pic']['tmp_name'];
+    $fileSize = $_FILES['profile_pic']['size'];
+    
+    // Check real mime type, not just extension
+    $fileType = mime_content_type($fileTmpPath); 
+    $allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    $maxSize = 2 * 1024 * 1024; // 2MB Limit
+
+    if (in_array($fileType, $allowedTypes) && $fileSize <= $maxSize) {
+        $imgBinary = file_get_contents($fileTmpPath);
+        $photoData = "data:" . $fileType . ";base64," . base64_encode($imgBinary);
+    }
 }
 ?>
 
@@ -64,6 +75,7 @@ if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] == 0) {
             padding: 60px 40px;
             border-right: 1px solid #e9edc9;
             text-align: center;
+            box-sizing: border-box;
         }
 
         .profile-leaf {
@@ -81,6 +93,7 @@ if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] == 0) {
             text-align: left;
             margin-top: 40px;
             font-size: 13px;
+            word-break: break-word; /* Prevents long emails from breaking layout */
         }
 
         .contact-row {
@@ -90,7 +103,7 @@ if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] == 0) {
             align-items: center;
         }
 
-        .contact-row i { color: var(--leaf); }
+        .contact-row i { color: var(--leaf); min-width: 15px; }
 
         /* Content Styling */
         .main-content {
@@ -155,15 +168,36 @@ if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] == 0) {
             transition: 0.3s;
             cursor: pointer;
             border: none;
+            font-family: inherit;
         }
 
         .btn-green { background: var(--forest); color: white; }
         .btn-soft { background: #ccd5ae; color: var(--forest); }
+        .btn:hover { opacity: 0.9; transform: translateY(-2px); }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .journal-page {
+                flex-direction: column;
+                border-radius: 20px;
+            }
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #e9edc9;
+                padding: 40px 20px;
+            }
+            .main-content { padding: 40px 20px; }
+        }
 
         @media print {
             .controls { display: none; }
             body { padding: 0; background: white; }
-            .journal-page { box-shadow: none; border-radius: 0; }
+            .journal-page { box-shadow: none; border-radius: 0; display: block; }
+            .sidebar { width: 100%; border: none; padding: 20px 0; text-align: left; background: white; }
+            .profile-leaf { margin: 0; float: left; margin-right: 20px; width: 100px; height: 100px; }
+            .contact-info { margin-top: 0; }
+            .main-content { padding: 20px 0; clear: both; }
         }
     </style>
 </head>
