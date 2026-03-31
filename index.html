@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kyle CV web</title>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --forest: #2d4a22;
-            --leaf: #7fb069;
-            --earth: #fdfbf7;
-            --stone: #4a4a4a;
+            --forest: #2d4a22; --leaf: #7fb069; --earth: #fdfbf7; --stone: #4a4a4a; --sand: #fefae0; --wood: #bc6c25;
         }
 
         body {
@@ -24,7 +22,8 @@
             padding: 40px 20px;
         }
 
-        .form-container {
+        /* --- Form Styles --- */
+        #main-form-container {
             background: var(--earth);
             max-width: 600px;
             width: 100%;
@@ -34,71 +33,42 @@
             border: 1px solid #d4a37333;
         }
 
-        h2 {
-            font-family: 'Playfair Display', serif;
-            color: var(--forest);
-            font-size: 32px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
+        h2 { font-family: 'Playfair Display', serif; color: var(--forest); font-size: 32px; text-align: center; margin-bottom: 30px; }
         .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 600; margin-bottom: 8px; color: var(--forest); font-size: 14px; }
+        input, textarea { width: 100%; padding: 12px 18px; border: 2px solid #e9edc9; border-radius: 12px; font-family: inherit; box-sizing: border-box; }
+        #img-preview { width: 100px; height: 100px; object-fit: cover; border-radius: 50%; margin: 10px auto; display: none; border: 3px solid var(--leaf); }
+        .submit-btn { width: 100%; padding: 15px; background: var(--forest); color: white; border: none; border-radius: 50px; font-weight: 600; cursor: pointer; margin-top: 20px; }
 
-        label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--forest);
-            font-size: 14px;
-        }
+        /* --- CV Result Styles (Hidden by default) --- */
+        #cv-display-container { display: none; width: 100%; max-width: 850px; }
+        .journal-page { background: #fff; border-radius: 40px 10px 40px 10px; overflow: hidden; box-shadow: 20px 20px 60px rgba(0,0,0,0.05); display: flex; }
+        .sidebar { width: 300px; background: #f9fbf2; padding: 60px 40px; border-right: 1px solid #e9edc9; text-align: center; }
+        .profile-leaf { width: 180px; height: 180px; border-radius: 0 50% 0 50%; overflow: hidden; border: 4px solid var(--leaf); margin: 0 auto 30px; }
+        .profile-leaf img { width: 100%; height: 100%; object-fit: cover; }
+        .contact-info { text-align: left; margin-top: 40px; font-size: 13px; }
+        .contact-row { margin-bottom: 15px; display: flex; gap: 12px; align-items: center; }
+        .contact-row i { color: var(--leaf); }
+        .main-content { padding: 60px; flex: 1; }
+        h1 { font-family: 'Playfair Display', serif; font-size: 42px; color: var(--forest); margin-bottom: 5px; }
+        .section-title { font-family: 'Playfair Display', serif; font-size: 20px; font-style: italic; color: var(--wood); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .section-title::after { content: ""; height: 1px; background: #ccd5ae; flex-grow: 1; }
+        .text-block { font-size: 15px; line-height: 1.8; margin-bottom: 40px; white-space: pre-line; }
+        .skill-tag { display: inline-block; background: #e9edc9; color: var(--forest); padding: 6px 16px; border-radius: 50px; font-size: 12px; font-weight: 700; margin: 0 8px 8px 0; }
+        
+        .controls { margin-top: 40px; display: flex; gap: 15px; justify-content: center; }
+        .btn { padding: 12px 25px; border-radius: 50px; font-weight: 700; text-decoration: none; cursor: pointer; border: none; }
+        .btn-green { background: var(--forest); color: white; }
 
-        input, textarea {
-            width: 100%;
-            padding: 12px 18px;
-            border: 2px solid #e9edc9;
-            border-radius: 12px;
-            background: #fff;
-            font-family: inherit;
-            transition: all 0.3s ease;
-        }
-
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: var(--leaf);
-            background: #fdfcf0;
-        }
-
-        #img-preview {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 50%;
-            margin: 10px auto;
-            display: none;
-            border: 3px solid var(--leaf);
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 15px;
-            background: var(--forest);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 20px;
-            transition: transform 0.2s;
-        }
-
-        .submit-btn:hover { background: var(--leaf); transform: scale(1.02); }
+        @media (max-width: 768px) { .journal-page { flex-direction: column; } .sidebar { width: 100%; border: none; border-bottom: 1px solid #eee; } }
+        @media print { .controls, #main-form-container { display: none !important; } body { padding: 0; background: white; } .journal-page { box-shadow: none; border-radius: 0; } }
     </style>
 </head>
 <body>
-    <div class="form-container">
+
+    <div id="main-form-container">
         <h2>Profile Pic</h2>
-        <form action="generate.php" method="POST" enctype="multipart/form-data">
+        <form id="cvForm" action="generate.php" method="POST" enctype="multipart/form-data">
             <div class="form-group" style="text-align: center;">
                 <img id="img-preview" src="#" alt="Preview">
                 <label for="profile_pic" style="cursor: pointer; color: var(--leaf);">+ Upload Profile Photo</label>
@@ -107,43 +77,79 @@
 
             <div class="form-group">
                 <label>Full Name</label>
-                <input type="text" name="fullname" placeholder="Kyle Castellano" required>
+                <input type="text" id="fullname" name="fullname" placeholder="Kyle Castellano" required>
             </div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                 <div class="form-group">
                     <label>Email Address</label>
-                    <input type="email" name="email" required>
+                    <input type="email" id="email" name="email" required>
                 </div>
                 <div class="form-group">
                     <label>Phone</label>
-                    <input type="tel" name="phone" required>
+                    <input type="tel" id="phone" name="phone" required>
                 </div>
             </div>
 
             <div class="form-group">
-                <label><Address>Address</Address></label>
-                <input type="text" name="address" required>
+                <label>Address</label>
+                <input type="text" id="address" name="address" required>
             </div>
 
             <div class="form-group">
                 <label>Summary</label>
-                <textarea name="summary" rows="3" required></textarea>
+                <textarea id="summary" name="summary" rows="3" required></textarea>
             </div>
 
             <div class="form-group">
                 <label>Education</label>
-                <textarea name="education" rows="2" required></textarea>
+                <textarea id="education" name="education" rows="2" required></textarea>
             </div>
 
             <div class="form-group">
                 <label>Core Skills (Separate with commas)</label>
-                <textarea name="skills" placeholder="Nature Photography, UI Design, Problem Solving" required></textarea>
+                <textarea id="skills" name="skills" placeholder="Photography, UI Design" required></textarea>
             </div>
 
-            <button type="submit" class="submit-btn">Generate/Submit</button>
+            <button type="submit" class="submit-btn">Generate CV</button>
         </form>
     </div>
+
+    <div id="cv-display-container">
+        <div class="journal-page">
+            <aside class="sidebar">
+                <div class="profile-leaf">
+                    <img id="view-photo" src="" alt="Profile">
+                </div>
+                <div class="contact-info">
+                    <div class="contact-row"><i class="fa-solid fa-envelope"></i> <span id="view-email"></span></div>
+                    <div class="contact-row"><i class="fa-solid fa-phone"></i> <span id="view-phone"></span></div>
+                    <div class="contact-row"><i class="fa-solid fa-location-dot"></i> <span id="view-address"></span></div>
+                </div>
+            </aside>
+            <main class="main-content">
+                <h1 id="view-name"></h1>
+                <p style="color: var(--leaf); font-weight: 600; margin-bottom: 40px;">Creative Individual // Nature Enthusiast</p>
+                <section>
+                    <h2 class="section-title">Personal Growth</h2>
+                    <div class="text-block" id="view-summary"></div>
+                </section>
+                <section>
+                    <h2 class="section-title">Academic Roots</h2>
+                    <div class="text-block" id="view-education"></div>
+                </section>
+                <section>
+                    <h2 class="section-title">Cultivated Skills</h2>
+                    <div id="view-skills"></div>
+                </section>
+            </main>
+        </div>
+        <div class="controls">
+            <button class="btn btn-green" onclick="window.print()">Export to PDF</button>
+            <button class="btn" style="background:#ccc" onclick="location.reload()">Edit Again</button>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
