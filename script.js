@@ -3,58 +3,54 @@ document.addEventListener('DOMContentLoaded', () => {
     const imagePreview = document.getElementById('img-preview');
     const cvForm = document.getElementById('cvForm');
 
-    // 1. Image Preview Logic
+    // 1. Photo Preview
     fileInput.addEventListener('change', function(e) {
         const file = e.target.files[0];
-        if (file && file.type.startsWith('image/')) {
+        if (file) {
             const reader = new FileReader();
-            reader.onload = function(event) {
+            reader.onload = (event) => {
                 imagePreview.src = event.target.result;
                 imagePreview.style.display = 'block';
-            }
+            };
             reader.readAsDataURL(file);
         }
     });
 
-    // 2. The GitHub "Fix"
-    cvForm.addEventListener('submit', function(e) {
-        // This prevents the page from trying to find generate.php
-        e.preventDefault();
+    // 2. THE FIX: Handle everything without PHP
+    cvForm.addEventListener('submit', (e) => {
+        e.preventDefault(); // STOPS the 405 error by not leaving the page
 
-        // Fill the CV section with form data
-        document.getElementById('view-name').textContent = document.getElementById('fullname').value;
-        document.getElementById('view-email').textContent = document.getElementById('email').value;
-        document.getElementById('view-phone').textContent = document.getElementById('phone').value;
-        document.getElementById('view-address').textContent = document.getElementById('address').value;
-        document.getElementById('view-summary').textContent = document.getElementById('summary').value;
-        document.getElementById('view-education').textContent = document.getElementById('education').value;
+        // Transfer data to the CV display
+        document.getElementById('out-fn').textContent = document.getElementById('fn').value;
+        document.getElementById('out-em').textContent = document.getElementById('em').value;
+        document.getElementById('out-ph').textContent = document.getElementById('ph').value;
+        document.getElementById('out-ad').textContent = document.getElementById('ad').value;
+        document.getElementById('out-sm').textContent = document.getElementById('sm').value;
+        document.getElementById('out-ed').textContent = document.getElementById('ed').value;
 
         // Handle Image
-        const viewPhoto = document.getElementById('view-photo');
-        if (imagePreview.src !== window.location.href && imagePreview.src !== '#') {
-            viewPhoto.src = imagePreview.src;
+        const outImg = document.getElementById('out-img');
+        if (imagePreview.src && imagePreview.src !== window.location.href + '#') {
+            outImg.src = imagePreview.src;
         } else {
-            viewPhoto.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(document.getElementById('fullname').value)}&background=7fb069&color=fff`;
+            outImg.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(document.getElementById('fn').value)}&background=7fb069&color=fff`;
         }
 
         // Handle Skills
-        const skillsContainer = document.getElementById('view-skills');
-        skillsContainer.innerHTML = ''; // Clear old ones
-        const skillsArray = document.getElementById('skills').value.split(',');
-        skillsArray.forEach(skill => {
-            if(skill.trim() !== "") {
+        const skCont = document.getElementById('out-sk');
+        skCont.innerHTML = '';
+        document.getElementById('sk').value.split(',').forEach(s => {
+            if(s.trim()){
                 const span = document.createElement('span');
                 span.className = 'skill-tag';
-                span.textContent = skill.trim();
-                skillsContainer.appendChild(span);
+                span.textContent = s.trim();
+                skCont.appendChild(span);
             }
         });
 
-        // HIDE the form and SHOW the CV
-        document.getElementById('main-form-container').style.display = 'none';
-        document.getElementById('cv-display-container').style.display = 'block';
-        
-        // Scroll to top
+        // Toggle UI
+        document.getElementById('form-ui').style.display = 'none';
+        document.getElementById('cv-ui').style.display = 'block';
         window.scrollTo(0, 0);
     });
 });
